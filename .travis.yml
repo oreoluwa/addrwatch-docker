@@ -1,0 +1,35 @@
+# language: c
+
+before_install:
+  - |
+    curl -sfL https://raw.githubusercontent.com/ldez/seihon/7d38218cc397499330219dd76a39f26e2b545f81/godownloader.sh | bash -s -- -b .
+    chmod +x seihon
+    sudo mv seihon /usr/local/bin
+  - docker run --rm --privileged hypriot/qemu-register
+  - echo $DOCKER_PASSWORD | docker login -u="$DOCKER_USERNAME" --password-stdin
+  - export RELEASE_NAME=daily-$(date -I)
+
+stages:
+  - name: deploy
+  - name: deploy-alpine
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: deploy
+      env:
+        - DESC=addrwatch docker image with multi-archs
+      sudo: required
+
+      script:
+        - seihon publish -v "${TRAVIS_TAG}" -v "daily" -v "${RELEASE_NAME}" -i oreoluwa/addrwatch --dry-run=false --template ./tmpl.Dockerfile -b debian:stable
+
+    - stage: deploy-alpine
+      env:
+        - DESC=addrwatch alpine docker image with multi-archs
+      sudo: required
+      services: docker
+      script:
+        - seihon publish -v "alpine-${TRAVIS_TAG}" -v "alpine-daily" -v "alpine-${RELEASE_NAME}" -i oreoluwa/addrwatch --dry-run=false --template ./tmpl.alpine.Dockerfile -b alpine:3.11

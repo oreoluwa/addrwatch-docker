@@ -32,4 +32,6 @@ jobs:
       sudo: required
       services: docker
       script:
-        - seihon publish -v "alpine-${TRAVIS_TAG}" -v "alpine-daily" -v "alpine-${RELEASE_NAME}" -i oreoluwa/addrwatch --dry-run=false --template ./tmpl.alpine.Dockerfile -b alpine:3.11
+        - mv tmpl.Dockerfile tmpl.debian.Dockerfile
+        - mv tmpl.alpine.Dockerfile tmpl.Dockerfile
+        - seihon publish -v "alpine-${TRAVIS_TAG}" -v "alpine-daily" -v "alpine-${RELEASE_NAME}" -i oreoluwa/addrwatch --dry-run=false --template ./tmpl.Dockerfile -b alpine:3.11

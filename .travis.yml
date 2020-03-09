@@ -24,7 +24,7 @@ jobs:
       sudo: required
 
       script:
-        - seihon publish -v "${TRAVIS_TAG}" -v "daily" -v "${RELEASE_NAME}" -i oreoluwa/addrwatch --dry-run=false --template ./tmpl.Dockerfile -b debian:stable
+        - seihon publish -v "${TRAVIS_TAG}" -v "daily" -v "${RELEASE_NAME}" -i oreoluwa/addrwatch --dry-run=false --template ./tmpl.Dockerfile -b debian:stable --targets=arm.v7,arm.v8,amd64,386
 
     - stage: deploy-alpine
       env:

@@ -1,6 +1,6 @@
 FROM {{ .RuntimeImage }}
 
-RUN apt-get update -y && apt-get install git automake libpcap-dev libevent-dev pkg-config build-essential libsqlite3-dev default-libmysqlclient-dev -y
+RUN apt-get update -y && apt-get install git automake libpcap-dev libevent-dev pkg-config build-essential libsqlite3-dev default-libmysqlclient-dev --no-install-recommends -y
 
 RUN git clone https://github.com/fln/addrwatch.git /var/app
 

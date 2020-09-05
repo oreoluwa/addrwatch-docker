@@ -1,0 +1,40 @@
+name: "Daily Deploy"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    env:
+      DOCKER_BUILDKIT: 1
+      ALPINE_VERSION: 3.12
+      DEBIAN_VERSION: stable
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Download Seihorn downloader
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/.bin/seihon
+        cd $GITHUB_WORKSPACE/.bin/seihon
+        curl -sfL https://raw.githubusercontent.com/ldez/seihon/master/godownloader.sh | bash -s -- -b .
+        echo "::add-path::$GITHUB_WORKSPACE/.bin/seihon"
+        chmod +x seihon
+    - name: Register qemu
+      run: docker run --rm --privileged hypriot/qemu-register
+    - name: Login to Docker Registry
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+    - name: Set $IMAGE_TAG environment variable
+      run: |
+        readonly IMAGE_TAG="daily-$(date +%Y-%m-%d)"
+        echo ::set-env name=IMAGE_TAG::$IMAGE_TAG
+    - name: build ubuntu image with multi-archs
+      run: |
+        seihon publish -v "daily" -v "daily-$DEBIAN_VERSION" -v "${IMAGE_TAG}" -v "${IMAGE_TAG}-$DEBIAN_VERSION" -i oreoluwa/addrwatch --dry-run=false --template tmpl.Dockerfile -b debian:$DEBIAN_VERSION --targets=arm.v6,arm.v7,arm.v8,amd64,386
+    - name: build alpine image with multi-archs
+      run: |
+        seihon publish -v "daily-alpine$ALPINE_VERSION" -v "daily-alpine" -v "${IMAGE_TAG}-alpine$ALPINE_VERSION" -v "${IMAGE_TAG}-alpine" -i oreoluwa/addrwatch --dry-run=false --template tmpl.alpine.Dockerfile -b alpine:$ALPINE_VERSION --targets=arm.v6,arm.v7,arm.v8,amd64,386

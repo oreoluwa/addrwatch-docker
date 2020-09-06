@@ -1,6 +1,18 @@
-FROM debian:stable
+FROM ubuntu:latest
 
-RUN apt-get update -y && apt-get install git automake libpcap-dev libevent-dev pkg-config build-essential libsqlite3-dev default-libmysqlclient-dev -y
+RUN apt-get update -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    git \
+    automake \
+    libpcap-dev \
+    libevent-dev \
+    pkg-config \
+    build-essential \
+    libsqlite3-dev \
+    ca-certificates \
+    default-libmysqlclient-dev && \
+    apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/fln/addrwatch.git /var/app
 

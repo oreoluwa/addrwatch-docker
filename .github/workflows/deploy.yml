@@ -13,6 +13,10 @@ jobs:
       DOCKER_BUILDKIT: 1
       ALPINE_VERSION: 3.12
       BASE_VERSION: latest
+      ALPINE_TARGETS: arm.v6,arm.v7,arm.v8,amd64,386
+      BASE_TARGETS: amd64,arm.v7,arm.v8
+      BASE_IMAGE: ubuntu
+      # BASE_TARGETS: arm.v5,arm.v7,arm.v8,amd64,386
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
@@ -34,7 +38,7 @@ jobs:
         echo ::set-env name=IMAGE_TAG::$IMAGE_TAG
     - name: build image with multi-archs
       run: |
-        seihon publish -v "daily" -v "daily-$BASE_VERSION" -v "${IMAGE_TAG}" -v "${IMAGE_TAG}-$BASE_VERSION" -i oreoluwa/addrwatch --dry-run=false --template tmpl.Dockerfile -b ubuntu:$BASE_VERSION --targets=arm.v5,arm.v7,arm.v8,amd64,386
+        seihon publish -v "daily" -v "daily-$BASE_VERSION" -v "${IMAGE_TAG}" -v "${IMAGE_TAG}-$BASE_VERSION" -i oreoluwa/addrwatch --dry-run=false --template tmpl.Dockerfile -b $BASE_IMAGE:$BASE_VERSION --targets=$BASE_TARGETS
     - name: build alpine image with multi-archs
       run: |
-        seihon publish -v "daily-alpine$ALPINE_VERSION" -v "daily-alpine" -v "${IMAGE_TAG}-alpine$ALPINE_VERSION" -v "${IMAGE_TAG}-alpine" -i oreoluwa/addrwatch --dry-run=false --template tmpl.alpine.Dockerfile -b alpine:$ALPINE_VERSION --targets=arm.v6,arm.v7,arm.v8,amd64,386
+        seihon publish -v "daily-alpine$ALPINE_VERSION" -v "daily-alpine" -v "${IMAGE_TAG}-alpine$ALPINE_VERSION" -v "${IMAGE_TAG}-alpine" -i oreoluwa/addrwatch --dry-run=false --template tmpl.alpine.Dockerfile -b alpine:$ALPINE_VERSION --targets=$ALPINE_TARGETS

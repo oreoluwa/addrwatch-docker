@@ -13,7 +13,8 @@ jobs:
       DOCKER_BUILDKIT: 1
       ALPINE_VERSION: 3.12
       BASE_VERSION: latest
-      ALPINE_TARGETS: arm.v6,arm.v7,arm.v8,amd64,386
+      ALPINE_TARGETS: arm.v6,arm.v7,arm.v8,amd64
+      # ALPINE_TARGETS: arm.v6,arm.v7,arm.v8,amd64,386
       BASE_TARGETS: amd64,arm.v7,arm.v8
       BASE_IMAGE: ubuntu
       # BASE_TARGETS: arm.v5,arm.v7,arm.v8,amd64,386
